@@ -97,6 +97,10 @@ type DefaultNetworkDefinition struct {
 	// +optional
 	OVNKubernetesConfig *OVNKubernetesConfig `json:"ovnKubernetesConfig,omitempty"`
 
+	// KuryrConfig configures the kuryr plugin
+	// +optional
+	KuryrConfig *KuryrConfig `json:"kuryrConfig,omitempty"`
+
 	// OtherConfig is for network plugins that are supported by the operator
 	// but do not need their own type. These values will be passed directly
 	// to the manifest templates.
@@ -138,6 +142,40 @@ type OpenShiftSDNConfig struct {
 	// If true, then assume the nodes already have a running openvswitch.
 	// +optional
 	UseExternalOpenvswitch *bool `json:"useExternalOpenvswitch,omitempty"`
+}
+
+type OpenStackCredentials struct {
+	// TODO(dulek): Might want to add all the options, e.g. keys.
+	AuthURL           string `json:"authURL"`
+	UserDomainName    string `json:"userDomainName"`
+	Username          string `json:"username"`
+	Password          string `json:"password"`
+	ProjectDomainName string `json:"projectDomainName"`
+	ProjectId         string `json:"projectId"`
+}
+
+// KuryrConfig configures the Kuryr-Kubernetes SDN
+type KuryrConfig struct {
+	// The base64-encoded CA certificate to use when connecting to OpenStack.
+	// +optional
+	OpenStackCACertificate string `json:"openStackCACertificate"`
+
+	OpenStackCredentials *OpenStackCredentials `json:"openStackCredentials"`
+
+	//TODO(dulek): Remove ports from config once we're 100% sure that there
+	// won't be any conflicts (Kuryr runs with host networking).
+
+	// The port kuryr-daemon will listen for readiness and liveness requests.
+	// +optional
+	DaemonProbesPort *uint16 `json:"daemonProbesPort"`
+
+	// The port kuryr-controller will listen for readiness and liveness requests.
+	// +optional
+	ControllerProbesPort *uint16 `json:"controllerProbesPort"`
+
+	PodSecurityGroups []string `json:"podSecurityGroups"`
+
+	ClusterId string `json:"clusterId"`
 }
 
 // OVNKubernetesConfig is the configuration parameters for networks using the

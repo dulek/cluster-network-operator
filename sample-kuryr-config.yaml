@@ -1,0 +1,24 @@
+apiVersion: "networkoperator.openshift.io/v1"
+kind: "NetworkConfig"
+metadata:
+  name: "default"
+  namespace: cluster-network-operator
+spec:
+  serviceNetwork: "10.3.0.0/24"
+  clusterNetworks:
+    - cidr: "10.4.0.0/16"
+      hostSubnetLength: 9
+  defaultNetwork:
+    type: Kuryr
+    kuryrConfig:
+      openStackCACertificate: "test"
+      openStackCredentials:
+        authURL: "http://192.168.101.249/identity"
+        userDomainName: "Default"
+        username: "kuryr"
+        password: "password"
+        projectDomainName: "Default"
+        projectId: "99d0da3e1b6c46728d0c2c5321b08306"
+      podSecurityGroups:
+      - "default"
+      clusterId: "e063cad4-4ec8-4e04-82da-8518b70ff520"

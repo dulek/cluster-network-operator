@@ -11,12 +11,12 @@ import (
 	uns "k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-func Render(conf *netv1.NetworkConfigSpec, manifestDir string) ([]*uns.Unstructured, error) {
+func Render(conf *netv1.NetworkConfigSpec, bootstrapData BootstrapData, manifestDir string) ([]*uns.Unstructured, error) {
 	log.Printf("Starting render phase")
 	objs := []*uns.Unstructured{}
 
 	// render default network
-	o, err := RenderDefaultNetwork(conf, manifestDir)
+	o, err := RenderDefaultNetwork(conf, bootstrapData, manifestDir)
 	if err != nil {
 		return nil, err
 	}
@@ -110,6 +110,8 @@ func ValidateDefaultNetwork(conf *netv1.NetworkConfigSpec) []error {
 	switch conf.DefaultNetwork.Type {
 	case netv1.NetworkTypeOpenShiftSDN, netv1.NetworkTypeDeprecatedOpenshiftSDN:
 		return validateOpenShiftSDN(conf)
+	case netv1.NetworkTypeKuryr:
+		return validateKuryr(conf)
 	default:
 		return []error{errors.Errorf("unknown or unsupported NetworkType: %s", conf.DefaultNetwork.Type)}
 	}
@@ -117,7 +119,8 @@ func ValidateDefaultNetwork(conf *netv1.NetworkConfigSpec) []error {
 
 // RenderDefaultNetwork generates the manifests corresponding to the requested
 // default network
-func RenderDefaultNetwork(conf *netv1.NetworkConfigSpec, manifestDir string) ([]*uns.Unstructured, error) {
+func RenderDefaultNetwork(conf *netv1.NetworkConfigSpec,
+	bootstrapData BootstrapData, manifestDir string) ([]*uns.Unstructured, error) {
 	dn := conf.DefaultNetwork
 	if errs := ValidateDefaultNetwork(conf); len(errs) > 0 {
 		return nil, errors.Errorf("invalid Default Network configuration: %v", errs)
@@ -126,6 +129,8 @@ func RenderDefaultNetwork(conf *netv1.NetworkConfigSpec, manifestDir string) ([]
 	switch dn.Type {
 	case netv1.NetworkTypeOpenShiftSDN, netv1.NetworkTypeDeprecatedOpenshiftSDN:
 		return renderOpenShiftSDN(conf, manifestDir)
+	case netv1.NetworkTypeKuryr:
+		return renderKuryr(conf, bootstrapData, manifestDir)
 	}
 
 	return nil, errors.Errorf("unknown or unsupported NetworkType: %s", dn.Type)
@@ -136,6 +141,8 @@ func FillDefaultNetworkDefaults(conf, previous *netv1.NetworkConfigSpec, hostMTU
 	switch conf.DefaultNetwork.Type {
 	case netv1.NetworkTypeOpenShiftSDN, netv1.NetworkTypeDeprecatedOpenshiftSDN:
 		fillOpenShiftSDNDefaults(conf, previous, hostMTU)
+	case netv1.NetworkTypeKuryr:
+		fillKuryrDefaults(conf)
 	default:
 		// This case has already been excluded by Validate
 		panic("invalid network")
@@ -150,6 +157,8 @@ func IsDefaultNetworkChangeSafe(prev, next *netv1.NetworkConfigSpec) []error {
 	switch prev.DefaultNetwork.Type {
 	case netv1.NetworkTypeOpenShiftSDN, netv1.NetworkTypeDeprecatedOpenshiftSDN:
 		return isOpenShiftSDNChangeSafe(prev, next)
+	case netv1.NetworkTypeKuryr:
+		return isKuryrChangeSafe(prev, next)
 	default: // should be unreachable
 		return []error{errors.Errorf("unknown network type %s", prev.DefaultNetwork.Type)}
 	}
