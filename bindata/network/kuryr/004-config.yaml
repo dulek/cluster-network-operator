@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kuryr-config
+  namespace: kuryr
+data:
+  kuryr.conf: |+
+    [DEFAULT]
+    debug = false
+
+    [binding]
+    default_driver = kuryr.lib.binding.drivers.vlan
+
+    [cni_daemon]
+    daemon_enabled = true
+    docker_mode = true
+    netns_proc_dir = /host_proc
+
+    [ingress]
+    #l7_router_uuid = <None>
+
+    [kubernetes]
+    api_root = ""
+    ssl_ca_crt_file = /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    token_file = /var/run/secrets/kubernetes.io/serviceaccount/token
+    ssl_verify_server_crt = true
+    controller_ha = false
+    controller_ha_elector_port = 16401
+    watch_retry_timeout = 3600
+    pod_vif_driver = nested-vlan
+    vif_pool_driver = nested
+    multi_vif_drivers = noop
+
+    enabled_handlers = vif,lb,lbaasspec,policy,pod_label,namespace
+    pod_security_groups_driver = policy
+    service_security_groups_driver = policy
+    pod_subnets_driver = namespace
+
+    [namespace_subnet]
+    pod_router = {{ .WorkerNodesRouter }}
+    pod_subnet_pool = {{ .PodSubnetpool }}
+
+    [neutron_defaults]
+    service_subnet = {{ .ServiceSubnet }}
+    project = {{ default "\"\"" .KuryrProject }}
+    pod_security_groups = {{ default "default" .PodSecurityGroups }}
+    #network_device_mtu = 1500
+
+    [neutron]
+    auth_url = {{ default "\"\"" .OpenStackAuthURL }}
+    auth_type = password
+    password = {{ default "\"\"" .OpenStackPassword }}
+    project_domain_name = {{ default "\"\"" .OpenStackProjectDomainName }}
+    project_id = {{ default "\"\"" .OpenStackProjectId }}
+    user_domain_name = {{ default "\"\"" .OpenStackUserDomainName }}
+    username = {{ default "\"\"" .OpenStackUsername }}
+{{ if .OpenStackCACertificate }}
+    ca_cert = /etc/ssl/certs/kuryr-ca-bundle.crt
+{{ end }}
+
+    [pod_vif_nested]
+    worker_nodes_subnet = {{ default "\"\"" .WorkerNodesSubnet }}
+
+    [vif_pool]
+    #ports_pool_max = 0
+    #ports_pool_min = 5
+    #ports_pool_batch = 10
+    #ports_pool_update_frequency = 20
+
+    [health_server]
+    port = {{ default 8082 .ControllerProbesPort }}
+
+    [cni_health_server]
+    port = {{ default 8090 .DaemonProbesPort }}

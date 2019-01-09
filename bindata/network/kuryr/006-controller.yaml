@@ -1,0 +1,59 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: kuryr-controller
+  namespace: kuryr
+  annotations:
+    kubernetes.io/description: |
+      This deployment launches the kuryr-controller component.
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: kuryr-controller
+      labels:
+        app: kuryr
+        component: network
+        type: infra
+        openshift.io/component: network
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+    spec:
+      serviceAccountName: kuryr
+      hostNetwork: true
+      priorityClassName: system-node-critical
+      containers:
+      - image: {{ .ControllerImage }}
+        name: controller
+{{ if (default true .ControllerEnableProbes) eq "true" }}
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: {{ default 8082 .ControllerProbesPort }}
+            scheme: HTTP
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: {{ default 8082 .ControllerProbesPort }}
+          initialDelaySeconds: 15
+{{ end }}
+        # FIXME(dulek): This shouldn't be required, but without it selinux is
+        #               complaining about access to kuryr.conf.
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: config-volume
+          mountPath: "/etc/kuryr/kuryr.conf"
+          subPath: kuryr.conf
+        - name: certificates-volume
+          mountPath: "/etc/ssl/certs/kuryr-ca-bundle.crt"
+          subPath: kuryr-ca-bundle.crt
+          readOnly: true
+      volumes:
+      - name: config-volume
+        configMap:
+          name: kuryr-config
+      - name: certificates-volume
+        secret:
+          secretName: kuryr-certificates

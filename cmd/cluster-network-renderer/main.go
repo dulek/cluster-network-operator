@@ -54,7 +54,8 @@ func render() error {
 
 	network.FillDefaults(&conf.Spec, nil)
 
-	objs, err := network.Render(&conf.Spec, manifestPath)
+	//TODO(dulek): We might want to be able to read bootstrap data from file.
+	objs, err := network.Render(&conf.Spec, network.BootstrapData{}, manifestPath)
 	if err != nil {
 		return err
 	}

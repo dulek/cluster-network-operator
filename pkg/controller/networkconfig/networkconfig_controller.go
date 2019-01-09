@@ -132,8 +132,15 @@ func (r *ReconcileNetworkConfig) Reconcile(request reconcile.Request) (reconcile
 		}
 	}
 
+	// Bootstrap any resources
+	bootstrapData, err := network.Bootstrap(&instance.Spec)
+	if err != nil {
+		log.Printf("Failed to bootstrap: %v", err)
+		return reconcile.Result{}, errors.Wrapf(err, "failed to bootstrap")
+	}
+
 	// Generate the objects
-	objs, err := network.Render(&instance.Spec, ManifestPath)
+	objs, err := network.Render(&instance.Spec, *bootstrapData, ManifestPath)
 	if err != nil {
 		log.Printf("Failed to render: %v", err)
 		return reconcile.Result{}, errors.Wrapf(err, "failed to render")
