@@ -202,6 +202,34 @@
   version = "v0.2.0"
 
 [[projects]]
+  digest = "1:8668a312021349017dcd177a44cbe6499747bba3e80e78497a3bfbf7a371bd4b"
+  name = "github.com/gophercloud/gophercloud"
+  packages = [
+    ".",
+    "openstack",
+    "openstack/identity/v2/tenants",
+    "openstack/identity/v2/tokens",
+    "openstack/identity/v3/tokens",
+    "openstack/loadbalancer/v2/l7policies",
+    "openstack/loadbalancer/v2/listeners",
+    "openstack/loadbalancer/v2/loadbalancers",
+    "openstack/loadbalancer/v2/monitors",
+    "openstack/loadbalancer/v2/pools",
+    "openstack/networking/v2/extensions/attributestags",
+    "openstack/networking/v2/extensions/layer3/routers",
+    "openstack/networking/v2/extensions/security/groups",
+    "openstack/networking/v2/extensions/security/rules",
+    "openstack/networking/v2/extensions/subnetpools",
+    "openstack/networking/v2/networks",
+    "openstack/networking/v2/ports",
+    "openstack/networking/v2/subnets",
+    "openstack/utils",
+    "pagination",
+  ]
+  pruneopts = "NT"
+  revision = "f27ceddc323ff01fdd909ac8377fb06b12db7f4f"
+
+[[projects]]
   branch = "master"
   digest = "1:2a2caa63899dae26ed3e4510b806549fd416d94db24ad68279daa62881b26488"
   name = "github.com/gregjones/httpcache"
@@ -847,6 +875,19 @@
   input-imports = [
     "github.com/Masterminds/sprig",
     "github.com/ghodss/yaml",
+    "github.com/gophercloud/gophercloud",
+    "github.com/gophercloud/gophercloud/openstack",
+    "github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/listeners",
+    "github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/loadbalancers",
+    "github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/pools",
+    "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/attributestags",
+    "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers",
+    "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/security/groups",
+    "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/security/rules",
+    "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/subnetpools",
+    "github.com/gophercloud/gophercloud/openstack/networking/v2/networks",
+    "github.com/gophercloud/gophercloud/openstack/networking/v2/ports",
+    "github.com/gophercloud/gophercloud/openstack/networking/v2/subnets",
     "github.com/onsi/gomega",
     "github.com/onsi/gomega/types",
     "github.com/openshift/api/legacyconfig/v1",
