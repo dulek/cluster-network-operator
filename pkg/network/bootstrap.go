@@ -11,6 +11,7 @@ type KuryrBootstrapData struct {
 	PodSubnetpool string
 	WorkerNodesRouter string
 	WorkerNodesSubnet string
+	PodSecurityGroups []string
 }
 
 type BootstrapData struct {

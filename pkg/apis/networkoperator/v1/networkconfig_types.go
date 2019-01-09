@@ -152,6 +152,7 @@ type OpenStackCredentials struct {
 	Password          string `json:"password"`
 	ProjectDomainName string `json:"projectDomainName"`
 	ProjectId         string `json:"projectId"`
+	RegionName        string `json:"regionName"`
 }
 
 // KuryrConfig configures the Kuryr-Kubernetes SDN
@@ -172,8 +173,6 @@ type KuryrConfig struct {
 	// The port kuryr-controller will listen for readiness and liveness requests.
 	// +optional
 	ControllerProbesPort *uint16 `json:"controllerProbesPort"`
-
-	PodSecurityGroups []string `json:"podSecurityGroups"`
 
 	ClusterId string `json:"clusterId"`
 }

@@ -40,7 +40,7 @@ func renderKuryr(conf *netv1.NetworkConfigSpec, bootstrapData BootstrapData,
 	data.Data["OpenStackUsername"] = c.OpenStackCredentials.Username
 	data.Data["KuryrProject"] = c.OpenStackCredentials.ProjectId
 
-	data.Data["PodSecurityGroups"] = strings.Join(c.PodSecurityGroups, ",")
+	data.Data["PodSecurityGroups"] = strings.Join(bootstrapData.Kuryr.PodSecurityGroups, ",")
 	data.Data["WorkerNodesSubnet"] = bootstrapData.Kuryr.WorkerNodesSubnet
 	data.Data["WorkerNodesRouter"] = bootstrapData.Kuryr.WorkerNodesRouter
 	data.Data["PodSubnetpool"] = bootstrapData.Kuryr.PodSubnetpool
@@ -136,10 +136,6 @@ func fillKuryrDefaults(conf *netv1.NetworkConfigSpec) {
 	if kc.ControllerProbesPort == nil {
 		var port uint16 = 8082
 		kc.ControllerProbesPort = &port
-	}
-
-	if len(kc.PodSecurityGroups) == 0 {
-		kc.PodSecurityGroups = []string{"default"}
 	}
 
 	if len(kc.PodSecurityGroups) == 0 {
