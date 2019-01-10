@@ -14,11 +14,12 @@ spec:
     from:
       kind: DockerImage
       name: docker.io/openshift/origin-hypershift:v4.0.0
-  - name: kuryr-daemon
-    from:
-      kind: DockerImage
-      name: docker.io/kuryr/cni:latest
-  - name: kuryr-controller
-    from:
-      kind: DockerImage
-      name: docker.io/kuryr/controller:latest
+# Seeing if this will trick the build system
+#  - name: kuryr-daemon
+#    from:
+#      kind: DockerImage
+#      name: docker.io/kuryr/cni:latest
+#  - name: kuryr-controller
+#    from:
+#      kind: DockerImage
+#      name: docker.io/kuryr/controller:latest
