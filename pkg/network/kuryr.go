@@ -1,6 +1,9 @@
 package network
 
 import (
+	b64 "encoding/base64"
+	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -55,6 +58,20 @@ func renderKuryr(conf *operv1.NetworkSpec, bootstrapResult *bootstrap.BootstrapR
 	data.Data["ControllerImage"] = os.Getenv("KURYR_CONTROLLER_IMAGE")
 	data.Data["KUBERNETES_SERVICE_HOST"] = os.Getenv("KUBERNETES_SERVICE_HOST")
 	data.Data["KUBERNETES_SERVICE_PORT"] = os.Getenv("KUBERNETES_SERVICE_PORT")
+
+	// DNS mutating webhook
+	data.Data["ServiceCABundle"] = ""
+    file, err := os.Open("/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt")
+    if err != nil {
+    	log.Print("Failed to find service-ca.crt, skipping Kuryr DNS webhook creation for now.")
+    } else {
+		defer file.Close()
+		caBytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			log.Print("Failed to read service-ca.crt, skipping Kuryr DNS webhook creation.")
+		}
+		data.Data["ServiceCABundle"] = b64.StdEncoding.EncodeToString(caBytes)
+	}
 
 	manifests, err := render.RenderDir(filepath.Join(manifestDir, "network/kuryr"), &data)
 	if err != nil {
